@@ -1,28 +1,28 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-const int SIZE = 200;
-int *STACK;
-int TOP = -1;
+typedef struct Node
+{
+    int data;
+    struct Node *Next;
+} Node;
+
+Node *TOP = NULL;
 
 void push(int value);
 int pop();
 void peek();
 int is_empty();
-int is_full();
 void traverse();
 
 int main()
 {
-    STACK = malloc(SIZE * sizeof(SIZE));
-
     printf("Enter 1 to Push a value into the STACK.\n");
     printf("Enter 2 to Pop value from the STACK.\n");
     printf("Enter 3 to Peek.\n");
     printf("Enter 4 to Check if the STACK is empty.\n");
-    printf("Enter 5 to Check if the STACK is full.\n");
-    printf("Enter 6 to Traverse the STACK.\n");
-    printf("Enter 7 to Exit.\n");
+    printf("Enter 5 to Traverse the STACK.\n");
+    printf("Enter 6 to Exit.\n");
 
     int choice, value;
     while(1)
@@ -56,18 +56,10 @@ int main()
                 break;
 
             case 5:
-                value = is_full();
-                if (value)
-                    printf("Stack is full.\n");
-                else
-                    printf("Stack is not full.\n");
-                break;
-
-            case 6:
                 traverse();
                 break;
 
-            case 7:
+            case 6:
                 return 0;
         }
 
@@ -76,27 +68,27 @@ int main()
 
 int is_empty()
 {
-    if (TOP == -1)
-        return 1;
-    return 0;
-}
-
-int is_full()
-{
-    if (TOP == SIZE - 1)
+    if (TOP == NULL)
         return 1;
     return 0;
 }
 
 void push(int value)
 {
-    if (TOP >= SIZE - 1)
+    Node *NEW;
+    NEW = malloc(sizeof(Node));
+    NEW->data = value;
+    NEW->Next = NULL;
+
+    if (is_empty())
     {
-        printf("Overflow.\n");
-        return;
+        TOP = NEW;
+    } else 
+    {
+        NEW->Next = TOP;
+        TOP = NEW;
     }
 
-    STACK[++TOP] = value;
     printf("Value pushed successfully.\n");
 }
 
@@ -108,8 +100,10 @@ int pop()
         return -1;
     }
 
-    return STACK[TOP--];
+    int temp = TOP->data;
+    TOP = TOP->Next;
     printf("Value popped successfully.\n");
+    return temp;
 }
 
 void peek()
@@ -120,9 +114,8 @@ void peek()
         return;
     }
 
-    printf("%d\n", STACK[TOP]);
+    printf("%d\n", TOP->data);
 }
-
 
 void traverse()
 {
@@ -132,9 +125,7 @@ void traverse()
         return;
     }
 
-    for (int i = 0; i <= TOP; i++)
-    {
-        printf("%d ", STACK[i]);
-    }
+    for (Node *ptr = TOP; ptr != NULL; ptr = ptr->Next)
+        printf("%d ", ptr->data);
     printf("\n");
 }
